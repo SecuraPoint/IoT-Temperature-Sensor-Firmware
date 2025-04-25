@@ -64,6 +64,10 @@ or if building manually:
 - Conan ≥ 2.0
 - Python 3 (for Conan)
 
+For running the scripts:
+- jq
+- Docker
+
 ---
 
 ### Quick Start (Using Docker)
