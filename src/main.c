@@ -4,6 +4,8 @@
 #include "sensor.h"
 
 int main() {
+    setvbuf(stdout, NULL, _IONBF, 0);
+    
     printf("Starting IoT Temperature Sensor (Local Logger)...\n");
 
     while (1) {
