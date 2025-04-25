@@ -134,6 +134,34 @@ cmake --build build
 
 ---
 
+## Trivy Scan commands
+
+### Scan repository
+To scan the repository. Will focus on Dockerfile:
+
+```bash
+trivy fs --scanners vuln,config,secret --severity CRITICAL,HIGH,MEDIUM .
+```
+
+### Scan binary / built application
+To scan the build results. Will focus on build artifact and dependencies:
+
+```bash
+./scan.sh
+
+# or scan with json report
+./scan-with-report.sh
+```
+
+### Scan docker image
+To scan the docker image. Will focus on OS-level of container:
+
+```bash
+trivy image iot-temp-sensor
+```
+
+
+
 ## Possible Extensions
 
 This basic firmware can easily be extended in the future:
