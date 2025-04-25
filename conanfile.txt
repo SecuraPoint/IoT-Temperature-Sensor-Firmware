@@ -1,0 +1,8 @@
+[requires]
+openssl/3.4.1
+cjson/1.7.18
+cmocka/1.1.7
+
+[generators]
+CMakeDeps
+CMakeToolchain
