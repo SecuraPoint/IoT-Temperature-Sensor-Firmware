@@ -23,5 +23,8 @@ RUN cmake --build build
 # Generate SBOM as part of the build
 RUN syft ./build/iot_temp_sensor --output cyclonedx-json > ./build/sbom-syft-build.json
 
+# Generate experimental SBOM with dynamically linked libraries
+RUN syft file:./build/iot_temp_sensor --scope all-layers --output cyclonedx-json > ./build/sbom-syft-build_with_libs.json
+
 
 CMD ["./build/iot_temp_sensor"]
