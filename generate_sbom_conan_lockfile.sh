@@ -1,12 +1,12 @@
 #!/bin/bash
-# generate_sbom_in_docker.sh - Create conan.lock and CycloneDX SBOM inside Docker
+# generate_sbom_conan_lockfile.sh - Create conan.lock and CycloneDX SBOM inside Docker
 
 set -e
 
 IMAGE_NAME="iot-temp-sensor"
 CONTAINER_NAME="sbom-generator"
 LOCKFILE="conan.lock"
-SBOM_FILE="sbom.json"
+SBOM_FILE="sbom-conan-lockfile.json"
 
 echo "🔵 Starting temporary container..."
 docker run -d --name $CONTAINER_NAME $IMAGE_NAME sleep infinity
@@ -42,5 +42,8 @@ docker cp $CONTAINER_NAME:/iot-temp-sensor/$LOCKFILE ./
 
 echo "🔵 Cleaning up container..."
 docker rm -f $CONTAINER_NAME
+
+echo "🔵 Cleaning up conan.lock..."
+rm $LOCKFILE
 
 echo "✅ SBOM generation complete: $SBOM_FILE and $LOCKFILE"
