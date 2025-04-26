@@ -3,12 +3,12 @@ project(iot_temp_sensor C)
 
 set(CMAKE_C_STANDARD 11)
 
+find_package(OpenSSL REQUIRED)
+
 add_executable(iot_temp_sensor
     src/main.c
     src/sensor.c
 )
-
-find_package(OpenSSL REQUIRED)
 
 target_link_libraries(iot_temp_sensor
     OpenSSL::SSL
@@ -17,5 +17,4 @@ target_link_libraries(iot_temp_sensor
 
 target_include_directories(iot_temp_sensor PRIVATE
     include
-    ${CMAKE_BINARY_DIR}/_deps/cjson-src
 )
