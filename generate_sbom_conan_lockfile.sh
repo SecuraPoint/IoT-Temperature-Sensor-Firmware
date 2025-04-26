@@ -6,7 +6,7 @@ set -e
 IMAGE_NAME="iot-temp-sensor"
 CONTAINER_NAME="sbom-generator"
 LOCKFILE="conan.lock"
-SBOM_FILE="sbom-conan-lockfile.json"
+SBOM_FILE_GRAPH="sbom-conan-lockfile-graph.json"
 
 echo "🔵 Starting temporary container..."
 docker run -d --name $CONTAINER_NAME $IMAGE_NAME sleep infinity
@@ -18,7 +18,7 @@ echo "🔵 Running conan install (to populate metadata)..."
 docker exec $CONTAINER_NAME conan install . --lockfile=$LOCKFILE --output-folder=build --build=missing
 
 echo "🔵 Generating dependency graph as JSON..."
-docker exec $CONTAINER_NAME conan graph info . --lockfile=$LOCKFILE --format=json > temp_graph.json
+docker exec $CONTAINER_NAME conan graph info . --lockfile=$LOCKFILE --format=json > scan-reports/temp_graph.json
 
 echo "🔵 Building CycloneDX SBOM from graph info..."
 jq '{
@@ -33,17 +33,12 @@ jq '{
       "purl": ("pkg:generic/" + (.ref | gsub("[/@]"; "-")))
     })
   )
-}' temp_graph.json > scan-reports/$SBOM_FILE
+}' scan-reports/temp_graph.json > scan-reports/$SBOM_FILE_GRAPH
 
-rm -f temp_graph.json
-
-echo "🔵 Copying generated lockfile from container..."
-docker cp $CONTAINER_NAME:/iot-temp-sensor/$LOCKFILE ./
+echo "🔵 Copying generated files from container..."
+docker cp $CONTAINER_NAME:/iot-temp-sensor/$LOCKFILE ./scan-reports/
 
 echo "🔵 Cleaning up container..."
 docker rm -f $CONTAINER_NAME
 
-echo "🔵 Cleaning up conan.lock..."
-rm $LOCKFILE
-
-echo "✅ SBOM generation complete: $SBOM_FILE and $LOCKFILE"
+echo "✅ SBOM generation complete: $SBOM_FILE_GRAPH and $LOCKFILE"
