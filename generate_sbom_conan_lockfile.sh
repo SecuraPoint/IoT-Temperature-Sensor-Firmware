@@ -26,7 +26,7 @@ jq '{
   "specVersion": "1.4",
   "version": 1,
   "components": (
-    .nodes // [] | map({
+    .graph.nodes // [] | map({
       "type": "library",
       "name": .ref,
       "version": (.package_id // "unknown"),
