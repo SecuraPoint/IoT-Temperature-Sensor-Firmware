@@ -1,4 +1,4 @@
-name: Run ScanCode Project
+name: Build and Run ScanCode Project
 
 on:
   push:
@@ -6,8 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-scan:
-    runs-on: ubuntu-latest
+  build-and-scan:
+    runs-on: ubuntu-22.04
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,19 +18,60 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
-          cd scancode-io
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake python3-pip curl jq
+          pip3 install conan
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          conan profile detect
 
-      - name: Run scan_project.py
+      - name: Install project dependencies with Conan
+        run: |
+          mkdir -p build
+          conan install . --output-folder=build --build=missing
+
+      - name: Configure with CMake
+        run: |
+          cmake -Bbuild -S. -DCMAKE_TOOLCHAIN_FILE=build/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build project
+        run: |
+          cmake --build build
+
+      - name: Package build output
+        run: |
+          tar -czf build-artifact.tar.gz -C build .
+
+      - name: Create GitHub release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.sha }}
+          name: Build ${{ github.sha }}
+          draft: false
+          prerelease: false
+          files: build-artifact.tar.gz
+
+      - name: Extract download URL of release asset
+        id: get_download_url
+        run: |
+          response=$(curl -s \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/tags/build-${{ github.sha }})
+
+          download_url=$(echo "$response" | jq -r '.assets[0].browser_download_url')
+          echo "DOWNLOAD_URL=$download_url" >> $GITHUB_ENV
+
+      - name: Run scan_project.py with release asset
         env:
           SCANCODEIO_URL: ${{ secrets.SCANCODEIO_URL }}
           SCANCODEIO_API_KEY: ${{ secrets.SCANCODEIO_API_KEY }}
           PROJECT_NAME: ${{ vars.PROJECT_NAME }}
-          INPUT_URLS: ${{ vars.INPUT_URLS }}
           PIPELINES: ${{ vars.PIPELINES }}
+          INPUT_URLS: ${{ env.DOWNLOAD_URL }}
         run: |
           cd scancode-io
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
           python scan_project.py
