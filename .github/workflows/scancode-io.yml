@@ -47,7 +47,7 @@ jobs:
 
       - name: Package build output
         run: |
-          tar -czf build-artifact.tar.gz -C build .
+          tar -czf build-output.tar.gz -C build .
 
       - name: Create GitHub release
         id: create_release
@@ -57,7 +57,7 @@ jobs:
           name: Build ${{ github.sha }}
           draft: false
           prerelease: false
-          files: build-artifact.tar.gz
+          files: build-output.tar.gz
 
       - name: Extract download URL of release asset
         id: get_download_url
@@ -66,7 +66,7 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             https://api.github.com/repos/${{ github.repository }}/releases/tags/build-${{ github.sha }})
 
-          download_url=$(echo "$response" | jq -r '.assets[] | select(.name == "build-artifact.tar.gz") | .browser_download_url')
+          download_url=$(echo "$response" | jq -r '.assets[] | select(.name == "build-output.tar.gz") | .browser_download_url')
           echo "BUILD_DOWNLOAD_URL=$download_url" >> $GITHUB_ENV
 
       - name: Prepare source code download URL
