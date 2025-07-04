@@ -21,19 +21,11 @@ def main():
     commit_hash = get_git_commit_hash()
     project_name += f"@{commit_hash}"
 
-    # Determine INPUT_URLS
-    github_repo = getenv("GITHUB_REPOSITORY")
-    github_sha = getenv("GITHUB_SHA")
-
-    if github_repo and github_sha:
-        # We're in GitHub Actions
-        input_urls_list = [f"https://github.com/{github_repo}/archive/{github_sha}.zip"]
-    else:
-        # Fallback to INPUT_URLS from .env or local environment
-        input_urls = getenv("INPUT_URLS")
-        if not input_urls:
-            raise ValueError("INPUT_URLS must be set as a comma-separated string outside of GitHub Actions.")
-        input_urls_list = [url.strip() for url in input_urls.split(",")]
+    # Fallback to INPUT_URLS from .env or local environment
+    input_urls = getenv("INPUT_URLS")
+    if not input_urls:
+        raise ValueError("INPUT_URLS must be set as a comma-separated string outside of GitHub Actions.")
+    input_urls_list = [url.strip() for url in input_urls.split(",")]
 
     pipeline = getenv("PIPELINES")
     if not pipeline:
