@@ -67,17 +67,38 @@ jobs:
             https://api.github.com/repos/${{ github.repository }}/releases/tags/build-${{ github.sha }})
 
           download_url=$(echo "$response" | jq -r '.assets[0].browser_download_url')
-          echo "DOWNLOAD_URL=$download_url" >> $GITHUB_ENV
+          echo "BUILD_DOWNLOAD_URL=$download_url" >> $GITHUB_ENV
 
-      - name: Run scan_project.py with release asset
+      - name: Prepare source code download URL
+        run: |
+          echo "SOURCE_DOWNLOAD_URL=https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip" >> $GITHUB_ENV
+
+      # ------------------------------
+      # 1. SCAN: Build Artifact
+      # ------------------------------
+      - name: Run scan_project.py on build artifact
         env:
           SCANCODEIO_URL: ${{ secrets.SCANCODEIO_URL }}
           SCANCODEIO_API_KEY: ${{ secrets.SCANCODEIO_API_KEY }}
-          PROJECT_NAME: ${{ vars.PROJECT_NAME }}
+          PROJECT_NAME: ${{ vars.PROJECT_NAME }}-build
           PIPELINES: ${{ vars.PIPELINES }}
-          INPUT_URLS: ${{ env.DOWNLOAD_URL }}
+          INPUT_URLS: ${{ env.BUILD_DOWNLOAD_URL }}
         run: |
           cd scancode-io
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          python scan_project.py
+
+      # ------------------------------
+      # 2. SCAN: Source Code Archive
+      # ------------------------------
+      - name: Run scan_project.py on source code archive
+        env:
+          SCANCODEIO_URL: ${{ secrets.SCANCODEIO_URL }}
+          SCANCODEIO_API_KEY: ${{ secrets.SCANCODEIO_API_KEY }}
+          PROJECT_NAME: ${{ vars.PROJECT_NAME }}-source
+          PIPELINES: ${{ vars.PIPELINES }}
+          INPUT_URLS: ${{ env.SOURCE_DOWNLOAD_URL }}
+        run: |
+          cd scancode-io
           python scan_project.py
