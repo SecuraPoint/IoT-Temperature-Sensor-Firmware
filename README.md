@@ -57,8 +57,10 @@ iot-temp-sensor/
 
 You will need the following tools installed:
 
-- Docker (recommended)  
-or if building manually:
+- Docker (recommended)
+
+OR if building manually:
+
 - GCC / Clang
 - CMake ≥ 3.22
 - Conan ≥ 2.0
@@ -67,6 +69,8 @@ or if building manually:
 For running the scripts:
 - jq
 - Docker
+- trivy
+- syft
 
 ---
 
