@@ -47,7 +47,7 @@ jobs:
 
       - name: Package build output
         run: |
-          tar -czf build-artifact.tar.gz .
+          tar --exclude='.git' -czf build-artifact.tar.gz .
 
       - name: Create GitHub release
         id: create_release
