@@ -59,15 +59,10 @@ jobs:
           prerelease: false
           files: build-output.tar.gz
 
-      - name: Extract download URL of release asset
-        id: get_download_url
+      - name: Prepare download URLs
         run: |
-          response=$(curl -s \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/releases/tags/build-${{ github.sha }})
-
-          download_url=$(echo "$response" | jq -r '.assets[] | select(.name == "build-output.tar.gz") | .browser_download_url')
-          echo "BUILD_DOWNLOAD_URL=$download_url" >> $GITHUB_ENV
+          echo "BUILD_DOWNLOAD_URL=https://github.com/${{ github.repository }}/releases/download/build-${{ github.sha }}/build-output.tar.gz" >> $GITHUB_ENV
+          echo "SOURCE_DOWNLOAD_URL=https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip" >> $GITHUB_ENV
 
       - name: Prepare source code download URL
         run: |
