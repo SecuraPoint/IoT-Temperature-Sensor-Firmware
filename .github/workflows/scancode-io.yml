@@ -35,7 +35,7 @@ jobs:
       - name: Install project dependencies with Conan
         run: |
           mkdir -p build
-          conan install . --output-folder=build --build=missing
+          conan install . --lockfile=conan.lock --output-folder=build --build=missing
 
       - name: Configure with CMake
         run: |
@@ -47,7 +47,7 @@ jobs:
 
       - name: Package build output
         run: |
-          tar --exclude='.git' --warning=no-file-changed --ignore-failed-read -czf build-artifact.tar.gz .
+          tar -czf build-artifact.tar.gz -C build .
 
       - name: Create GitHub release
         id: create_release
