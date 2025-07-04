@@ -1,0 +1,35 @@
+name: Run ScanCode Project
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  run-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd scancode-io
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run scan_project.py
+        env:
+          SCANCODEIO_URL: ${{ secrets.SCANCODEIO_URL }}
+          SCANCODEIO_API_KEY: ${{ secrets.SCANCODEIO_API_KEY }}
+          PROJECT_NAME: ${{ vars.PROJECT_NAME }}
+          INPUT_URLS: ${{ vars.INPUT_URLS }}
+          PIPELINES: ${{ vars.PIPELINES }}
+        run: |
+          cd scancode-io
+          python scan_project.py
