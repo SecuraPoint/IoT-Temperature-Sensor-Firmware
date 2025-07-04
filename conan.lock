@@ -1,0 +1,12 @@
+{
+    "version": "0.5",
+    "requires": [
+        "zlib/1.3.1#b8bc2603263cf7eccbd6e17e66b0ed76%1733936244.862",
+        "openssl/3.4.1#afcaa66ae3020340af2d5641a475b5ae%1747751109.075",
+        "cmocka/1.1.7#0475924a264ea30aff4fb78495779ef1%1703986165.986",
+        "cjson/1.7.18#e67d95071acf8902d892d89a858d31ab%1743006050.674"
+    ],
+    "build_requires": [],
+    "python_requires": [],
+    "config_requires": []
+}
