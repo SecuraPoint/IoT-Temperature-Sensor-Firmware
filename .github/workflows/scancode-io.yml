@@ -78,13 +78,13 @@ jobs:
       # ------------------------------
       # 2. SCAN: Source Code Archive
       # ------------------------------
-      - name: Run scan_project.py on source code archive
-        env:
-          SCANCODEIO_URL: ${{ secrets.SCANCODEIO_URL }}
-          SCANCODEIO_API_KEY: ${{ secrets.SCANCODEIO_API_KEY }}
-          PROJECT_NAME: ${{ vars.PROJECT_NAME }}-source
-          PIPELINES: ${{ vars.PIPELINES }}
-          INPUT_URLS: https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip
-        run: |
-          cd scancode-io
-          python scan_project.py
+      # - name: Run scan_project.py on source code archive
+      #   env:
+      #     SCANCODEIO_URL: ${{ secrets.SCANCODEIO_URL }}
+      #     SCANCODEIO_API_KEY: ${{ secrets.SCANCODEIO_API_KEY }}
+      #     PROJECT_NAME: ${{ vars.PROJECT_NAME }}-source
+      #     PIPELINES: ${{ vars.PIPELINES }}
+      #     INPUT_URLS: https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip
+      #   run: |
+      #     cd scancode-io
+      #     python scan_project.py
