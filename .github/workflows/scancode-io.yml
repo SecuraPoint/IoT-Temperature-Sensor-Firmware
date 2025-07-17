@@ -87,4 +87,17 @@ jobs:
           INPUT_URLS: https://github.com/${{ github.repository }}/archive/${{ github.sha }}.zip
         run: |
           cd scancode-io
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
           python scan_project.py
+
+  use-scancode-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: scancode-inputs
+      - uses: aboutcode-org/scancode-action@beta
+        with:
+          pipelines: "scan_codebase"
+          output-formats: "json xlsx spdx cyclonedx"
